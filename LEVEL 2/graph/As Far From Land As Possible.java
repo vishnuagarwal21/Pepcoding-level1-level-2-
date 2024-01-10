@@ -18,7 +18,7 @@ public class Main {
       }
     }
 
-    System.out.println(shortestBridge(arr));
+    System.out.println(maxDistance(arr));
 
   }
   
@@ -31,64 +31,39 @@ public class Main {
           this.col = col;
       }
   }
+  statuc int[][] dirs = {{1,0}, {0, -1}, {-1, 0}, {0, 1}};
 
-  public static int shortestBridge(int[][] A) {
-      LinkedList<Pair>queue = new LinkedList<>();
-      boolean[][]vis = new boolean[A.length][A[0].length];
-      boolean flag = false;
-      
-      for(int i = 0; i < A.length && !flag;i++){
-          for(int j = 0; j < A[0].length && !flag;j++){
-              if(A[i][j] == 1){
-                  dfs(i,j,A,queue,vis);
-                  flag = true;
-              }
-          }
+  public static int maxDistance(int[][] arr) {
+     boolean visited[][] = new boolean[arr.length][arr[0].length];
+    Queue<Pair> queue = new LinkedList<>();
+    for (int i = 0; i < arr.length; i++) {
+      for (int j = 0; j <arr[i].length ; j++) {
+        if (arr[i][j] == 1) {
+         visited[i][j] = true;
+          queue.add(new Pair(i,j));
+        }
       }
-      
-      int level = 0;
-      while(queue.size() > 0){
-          int size = queue.size();
-          while(size-->0){
-              Pair rem = queue.removeFirst();
-              
-              for(int i = 0; i <  4; i++){
-                  int rowdash = rem.row + dirs[i][0];
-                  int coldash = rem.col + dirs[i][1];
-                  if(rowdash < 0 || coldash < 0 || rowdash >= A.length || coldash >= A[0].length || vis[rowdash][coldash] == true){
-                      continue;
-                  }
-                  
-                  if(A[rowdash][coldash] == 1){
-                      return level;
-                  }
-                  
-                  queue.addLast(new Pair(rowdash,coldash));
-                  vis[rowdash][coldash] = true;
-                  
-              }
-              
+    }
+    if (queue.size() == 0 || queue.size() == arr.length* arr[0].length) {
+      return -1;
+    }
+    int count = -1;
+    while(!queue.isEmpty()) {
+        count++;
+      int size = queue.size();
+      while(size-- > 0) {
+        Pair cell = queue.remove();
+        for (int i = 0; i < dirs.length; i++) {
+          int r = cell.row + dirs[i][0];
+          int c = cell.row + dirs[i][1];
+          if (r >=0  && r < arr.length && c >=0 && c < arr[0].length && visited[r][c] == false && arr[r][c] == 0) {
+             visited[r][c] = true;
+            queue.add(new Pair(r, c));
           }
-              
-              level++;
-          }
-          
-          return -1;
+        }
       }
-      
-      static int [][] dirs = {{0,1},{1,0},{0,-1},{-1,0}};
-      public static void dfs(int i, int j, int[][] A, LinkedList<Pair>queue,boolean[][]vis){
-          vis[i][j] = true;
-          queue.addLast(new Pair(i,j));
-          for(int k = 0; k < 4; k++){
-              int rowdash = i + dirs[k][0];
-              int coldash = j + dirs[k][1];
-              
-              if(rowdash < 0 || coldash < 0 || rowdash >= A.length || coldash >= A[0].length || vis[rowdash][coldash] == true || vis[rowdash][coldash] == true || A[rowdash][coldash] == 0){
-                  continue;
-              }
-              
-              dfs(rowdash,coldash,A,queue,vis);
-          }
-      }
+    
+    }
+    return count; 
+  }
   }
